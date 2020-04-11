@@ -8,7 +8,15 @@ public class PlayerMovement : MonoBehaviour
     public float horizontalMove;
     public float verticalMove;
     public CharacterController player;
+
     public float playerSpeed;
+    private Vector3 movePlayer;
+    private Vector3 playerInput;
+
+    public Camera mainCamera;
+    private Vector3 camForward;
+    private Vector3 camRight;
+    
     void Start()
     {
         player = GetComponent<CharacterController>();
@@ -19,11 +27,23 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontalMove = Input.GetAxis("Horizontal");
         verticalMove = Input.GetAxis("Vertical");
+        playerInput = new Vector3(horizontalMove, 0, verticalMove);
+        camDirection();
+        movePlayer = playerInput.x * camRight + playerInput.z * camForward;
+        player.transform.LookAt(player.transform.position + movePlayer);
 
+        player.Move(movePlayer * playerSpeed * Time.deltaTime);
     }
 
-    private void FixedUpdate()
+    void camDirection()
     {
-        player.Move(new Vector3(horizontalMove, 0, verticalMove) * playerSpeed * Time.deltaTime);
+        camForward = mainCamera.transform.forward;
+        camRight = mainCamera.transform.right;
+
+        camForward.y = 0;
+        camRight.y = 0;
+
+        camForward = camForward.normalized;
+        camRight = camRight.normalized;
     }
 }
