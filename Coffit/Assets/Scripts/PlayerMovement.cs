@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 movePlayer;
     private Vector3 playerInput;
 
+    private float gravity = 9.8f;
+
     public Camera mainCamera;
     private Vector3 camForward;
     private Vector3 camRight;
@@ -30,8 +32,9 @@ public class PlayerMovement : MonoBehaviour
         playerInput = new Vector3(horizontalMove, 0, verticalMove);
         camDirection();
         movePlayer = playerInput.x * camRight + playerInput.z * camForward;
+        movePlayer = movePlayer * playerSpeed;
         player.transform.LookAt(player.transform.position + movePlayer);
-
+        setGravity();
         player.Move(movePlayer * playerSpeed * Time.deltaTime);
     }
 
@@ -45,5 +48,18 @@ public class PlayerMovement : MonoBehaviour
 
         camForward = camForward.normalized;
         camRight = camRight.normalized;
+    }
+
+    void setGravity()
+    {
+        movePlayer.y = -gravity;
+
+        if(player.isGrounded)
+        {
+            movePlayer.y = -gravity * Time.deltaTime;
+        } else
+        {
+            movePlayer.y += gravity * Time.deltaTime;
+        }
     }
 }
